@@ -94,43 +94,6 @@ export default {
 	},
 	methods: {
 		...mapMutations(["toggleAuthModal"]),
-		register(values) {
-			this.reg_show_alert = true;
-			this.reg_in_submission = true;
-			this.reg_alert_variant = "bg-blue-500";
-			this.reg_alert_message = "Please wait! Your account is being created.";
-
-			// Succress
-			this.reg_alert_variant = "bg-green-500";
-			this.reg_alert_message = "Success!! Account created";
-
-			const { name, email, age, password, country, tos } = values;
-			console.log({
-				value: values,
-				clg: "values",
-				location: "components/Auth.vue",
-			});
-			console.log({
-				name,
-				email,
-				age,
-				password,
-				country,
-				tos,
-				clg: "destructured",
-				location: "components/Auth.vue",
-			});
-		},
-		login(values) {
-			const { email, password } = values;
-			console.log({
-				email,
-				password,
-				values: values,
-				clg: "Login Values Destructured",
-				location: "components/Auth.vue",
-			});
-		},
 	},
 };
 </script>

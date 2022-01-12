@@ -24,6 +24,19 @@
 			/>
 			<ErrorMessage class="text-red-600" name="name" />
 		</div>
+
+		<!-- User Name -->
+		<div class="mb-3">
+			<label class="inline-block mb-2">Username</label>
+			<vee-field
+				as="input"
+				type="text"
+				name="user_name"
+				class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+				placeholder="Enter a Username"
+			/>
+			<ErrorMessage class="text-red-600" name="user_name" />
+		</div>
 		<!-- Email -->
 		<div class="mb-3">
 			<label class="inline-block mb-2">Email</label>
@@ -45,6 +58,23 @@
 			/>
 			<ErrorMessage class="text-red-600" name="age" />
 		</div>
+		<!-- Profile Type -->
+		<div class="mb-3">
+			<label for="" class="inline-block mb-2">What are you here for?</label>
+			<vee-field
+				class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+				name="profile_type"
+				as="select"
+			>
+				<option value="listener">Just Listening</option>
+				<option value="singer">Singer</option>
+				<option value="producer">Producer</option>
+				<option value="guitarist">Guitarist</option>
+				<option value="pianist">Pianist</option>
+			</vee-field>
+			<ErrorMessage class="text-red-600" name="profile_type" />
+		</div>
+
 		<!-- Password -->
 		<div class="mb-3">
 			<label class="inline-block mb-2">Password</label>
@@ -86,6 +116,7 @@
 			</vee-field>
 			<ErrorMessage class="text-red-600" name="country" />
 		</div>
+
 		<!-- TOS -->
 		<div class="mb-3 pl-6">
 			<vee-field
@@ -108,17 +139,22 @@
 </template>
 
 <script>
+import { auth, usersCollection } from "@/includes/firebase";
+import { mapMutations } from "vuex";
+
 export default {
 	name: "RegisterForm",
 	data() {
 		return {
 			schema: {
 				name: "name_required|min:3|max:100|alpha_spaces",
+				user_name: "required|min:5|alpha_spaces",
 				email: "required|email|min:3|max:100",
 				age: "required|min:2|max:3|min_value:18|max_value:100",
 				password: "password_required|min:3|max:32",
 				confirm_password: "passwords_mismatch:@password",
 				country: "required|country_excluded:China",
+				profile_type: "required",
 				tos: "tos",
 			},
 			userData: {
@@ -132,32 +168,29 @@ export default {
 		};
 	},
 	methods: {
-		register(values) {
+		...mapMutations(["toggleAuthModal"]),
+		async register(values) {
 			this.reg_show_alert = true;
 			this.reg_in_submission = true;
 			this.reg_alert_variant = "bg-blue-500";
 			this.reg_alert_message = "Please wait! Your account is being created.";
 
+			try {
+				await this.$store.dispatch("register", values);
+			} catch (err) {
+				console.log(err);
+				this.reg_in_submission = false;
+				this.reg_alert_variant = "bg-red-500";
+				this.reg_alert_message = `${err}`;
+				return;
+			}
+
+			console.log(this.$store.state.userLoggedIn);
 			// Succress
 			this.reg_alert_variant = "bg-green-500";
 			this.reg_alert_message = "Success!! Account created";
 
-			const { name, email, age, password, country, tos } = values;
-			console.log({
-				value: values,
-				clg: "values",
-				location: "components/Auth.vue",
-			});
-			console.log({
-				name,
-				email,
-				age,
-				password,
-				country,
-				tos,
-				clg: "destructured",
-				location: "components/Auth.vue",
-			});
+			window.location.reload();
 		},
 	},
 };
